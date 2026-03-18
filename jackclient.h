@@ -22,6 +22,7 @@
 #include <jack/jack.h>
 #include <string>
 #include <vector>
+#include <pthread.h>
 
 class jackc_portless_t {
 public:
