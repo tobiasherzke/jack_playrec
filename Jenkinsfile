@@ -86,10 +86,6 @@ pipeline {
     stages {
         stage("build") {
             parallel {
-                stage(                        "focal && x86_64 && mhadev") {
-                    agent {label              "focal && x86_64 && mhadev"}
-                    steps {jack_playrec_steps("focal && x86_64 && mhadev")}
-                }
                 stage(                        "windows && x86_64 && mhadev") {
                     agent {label              "windows && x86_64 && mhadev"}
                     steps {jack_playrec_steps("windows && x86_64 && mhadev")}
@@ -99,10 +95,6 @@ pipeline {
         stage("publish") {
             agent {label "aptly"}
             steps {
-                // Receive all deb packages from jack_playrec build
-                unstash "x86_64_focal"
-
-                archiveArtifacts 'packaging/deb/hoertech/*/*deb'
 
                 // Make windows installer available as a Jenkins artifact
                 unstash "x86_64_windows"
