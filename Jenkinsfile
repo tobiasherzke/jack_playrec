@@ -82,33 +82,17 @@ def jack_playrec_steps(stage_name) {
 }
 
 pipeline {
-    agent {label "jenkinsmaster"}
+    agent {label "pipeline"}
     stages {
         stage("build") {
             parallel {
-                stage(                        "bionic && x86_64 && mhadev") {
-                    agent {label              "bionic && x86_64 && mhadev"}
-                    steps {jack_playrec_steps("bionic && x86_64 && mhadev")}
-                }
-                stage(                        "xenial && x86_64 && mhadev") {
-                    agent {label              "xenial && x86_64 && mhadev"}
-                    steps {jack_playrec_steps("xenial && x86_64 && mhadev")}
-                }
                 stage(                        "focal && x86_64 && mhadev") {
                     agent {label              "focal && x86_64 && mhadev"}
                     steps {jack_playrec_steps("focal && x86_64 && mhadev")}
                 }
-                stage(                        "bionic && armv7 && mhadev") {
-                    agent {label              "bionic && armv7 && mhadev"}
-                    steps {jack_playrec_steps("bionic && armv7 && mhadev")}
-                }
                 stage(                        "windows && x86_64 && mhadev") {
                     agent {label              "windows && x86_64 && mhadev"}
                     steps {jack_playrec_steps("windows && x86_64 && mhadev")}
-                }
-                stage(                        "mac && x86_64 && mhadev") {
-                    agent {label              "mac && x86_64 && mhadev"}
-                    steps {jack_playrec_steps("mac && x86_64 && mhadev")}
                 }
             }
         }
@@ -117,9 +101,6 @@ pipeline {
             steps {
                 // Receive all deb packages from jack_playrec build
                 unstash "x86_64_focal"
-                unstash "x86_64_bionic"
-                unstash "x86_64_xenial"
-                unstash "armv7_bionic"
 
                 archiveArtifacts 'packaging/deb/hoertech/*/*deb'
 
@@ -127,9 +108,6 @@ pipeline {
                 unstash "x86_64_windows"
                 archiveArtifacts 'packaging/exe/*exe'
 
-                // Make the macOS installer available as a Jenkins artifact
-                unstash "x86_64_mac"
-                archiveArtifacts 'packaging/pkg/*pkg'
             }
         }
     }
@@ -140,7 +118,7 @@ pipeline {
     // https://jenkins.io/doc/pipeline/steps/workflow-basic-steps/#-mail-%20mail
     post {
         failure {
-            mail to: 'p.maanen@hoertech.de,t.herzke@hoertech.de,g.grimm@hoertech.de',
+            mail to: 't.herzke@hoertech.de',
                  subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
                  body: "Something is wrong with ${env.BUILD_URL}"
         }
